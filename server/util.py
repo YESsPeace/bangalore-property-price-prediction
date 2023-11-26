@@ -13,14 +13,18 @@ __model = None
 
 
 def get_estimated_price(location: str, sqft: float, bhk: int, bath: int):
+    global __locations
+    global __data_columns
+    global __model
+
     if __locations is None or __data_columns is None or __model is None:
         load_saved_data()
-
 
     try:
         loc_index = __data_columns.index(location.lower())
 
-    except:
+    except Exception as e:
+        print(f"Error finding location index: {e}")
         loc_index = -1
 
     x = np.zeros(len(__data_columns))
@@ -30,6 +34,8 @@ def get_estimated_price(location: str, sqft: float, bhk: int, bath: int):
 
     if loc_index >= 0:
         x[loc_index] = 1
+
+    print("Debug - loc_index:", loc_index)
 
     return round(__model.predict([x])[0], 2)
 
@@ -54,4 +60,4 @@ def load_saved_data():
 if __name__ == '__main__':
     load_saved_data()
     print(get_location_names())
-    print(get_estimated_price('1st Phase JP Nagar', 1000, 2, 2))
+    print(get_estimated_price('location_1st Phase JP Nagar', 1000, 2, 2))
